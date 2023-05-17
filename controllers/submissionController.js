@@ -25,7 +25,7 @@ export const createSubmission = async (req, res) => {
      // emailData.jsonData = result;
       //if(enable){
         //console.log("Id"+id);
-       await klaviyoQueue.add(data);
+       await klaviyoQueue(add);
         //await sendMailQueue.add(emailData);
       //}
     // }else{

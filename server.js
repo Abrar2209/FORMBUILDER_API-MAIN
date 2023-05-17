@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import router from './router/router.js';
 import {ConfigWrapper, Lists} from 'klaviyo-api'
-import fetch from 'node-fetch';
 import {connection} from './controllers/appSettingsController.js'
+
 export let kapikey="";
 connection.query('SELECT klaviyoSetting FROM shopify_sessions ', (error, results) => {
   if (error) {
@@ -11,15 +11,16 @@ connection.query('SELECT klaviyoSetting FROM shopify_sessions ', (error, results
     //connection.end(); // close the connection
     return;
   }
+  console.log(results[0].klaviyoSetting)
   // extract the Klaviyo API key from the first row of the result set
-  const { klaviyoApiKey } = JSON.parse(results[0].klaviyoSetting);
+  const  klaviyoApiKey  = JSON.parse(results[0].klaviyoSetting);
 
-  console.log("Api Key"+klaviyoApiKey);
+  console.log("Api Key"+klaviyoApiKey.klaviyoApiprivateKey );
   kapikey=klaviyoApiKey
   //connection.end(); // close the connection
 
-console.log("Keys"+kapikey)
- ConfigWrapper(kapikey)
+console.log("Keys"+kapikey.klaviyoApiprivateKey)
+ ConfigWrapper(klaviyoApiKey.klaviyoApiprivateKey)
 })
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/forms', router);
 app.get('/', (req, res) => {
   res.status(200).send('Server is running fine');
 });
+
 app.get("/api/klaviyo/lists", async (req, res) => {
   Lists.getLists()
   .then((json) =>{
@@ -42,6 +44,13 @@ app.get("/api/klaviyo/lists", async (req, res) => {
  })
 .catch(error => console.log('An error was thrown check the HTTP code with error.status'));
 }); 
+export let formid;
+app.get('/api/data', (req, res) => {
+  formid = req.query.id;
+  // Use the id as needed in your server logic
+  console.log("Form Id is"+formid)
+});
+
 
 export let id={};
 app.post("/api/klaviyo/list/subscribe", (req, res) => {

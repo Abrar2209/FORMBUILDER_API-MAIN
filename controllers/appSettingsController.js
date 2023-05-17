@@ -46,16 +46,22 @@ export const recaptchaSetting = (req, res) => {
     }
   });
 };
+let globalId = null;
 
+export const getGlobalId = () => {
+  return globalId;
+};
 export const klaviyoSetting = (req, res) => {
-  const { klaviyoSetting, shop } = req.body;
-
+  const { klaviyoSetting, shop,id } = req.body;
+  console.log(req.body)
+  
   var sql = `UPDATE shopify_sessions SET klaviyoSetting = ? WHERE shop = ?`;
   connection.query(sql, [JSON.stringify(klaviyoSetting), shop], function (err, result) {
     if (err) {
       res.status(400).send(err);
     } else {
       console.log("Row has been updated");
+      globalId = id; 
       res.status(201).send({
         "Data Stored!": result,
       });
