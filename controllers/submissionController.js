@@ -11,10 +11,13 @@ import mysql from 'mysql2/promise'
 export let shopnames="";
 // Create submission
 export const createSubmission = async (req, res) => {
-  const {recaptchaToken, recaptchaEnabled, adminMailSetings, shopname, ...data} = req.body;
+  const {recaptchaToken, recaptchaEnabled, adminMailSetings, shopname, klaviyoSettings,formFields,...data} = req.body;
+  const {enable} = klaviyoSettings;
+  const klaviyoenable= klaviyoSettings.enable;
     //const {...emailData} = adminMailSetings;
     //emailData.shopname = shopname;
-     console.log(shopname)
+      // console.log( data)
+      //  console.log(formFields)
      shopnames=shopname
     // if(data.customerIpAdd || data.customerID){
     //   const sql = `SELECT klaviyoSetting FROM shopify_sessions WHERE shop = ?`;
@@ -23,14 +26,17 @@ export const createSubmission = async (req, res) => {
     //     klaviyoApiKey = jsonObject.klaviyoApiKey;
     //   });
      // emailData.jsonData = result;
-      //if(enable){
+     const hasEmailType = formFields.some(field => field.type === 'email');
+      console.log(hasEmailType);
+      if(klaviyoenable && hasEmailType){
         //console.log("Id"+id);
-       await klaviyoQueue(add);
+       await klaviyoQueue.add(data);                                                                                                                                                                   
         //await sendMailQueue.add(emailData);
-      //}
-    // }else{
-    //   res.status(400).send("IpAdd or customer id, one of is required!");
-    // }
+      }
+     else{
+       res.status(400).send("IpAdd or customer id, one of is required!");
+       console.log('cant add data')
+     }
   };
 
 
